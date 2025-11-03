@@ -1,7 +1,7 @@
 import pandas as pd
 
 # Load your local dataset (make sure it's in the same folder)
-df = pd.read_csv("covid_data.csv")
+df = pd.read_csv("data/covid_data.csv")
 
 # Confirm dataset loaded
 print("✅ Dataset loaded successfully!")
