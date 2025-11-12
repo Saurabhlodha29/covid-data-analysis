@@ -1,42 +1,38 @@
 import pandas as pd
-import numpy as np
 
-# Load dataset
-df = pd.read_csv("data/covid_data.csv")
+# ✅ Load cleaned dataset
+df = pd.read_csv("cleaned_covid_data.csv")
+df["date"] = pd.to_datetime(df["date"], errors="coerce")
+df = df[df["date"] <= "2022-01-31"]
+df = df.fillna(0)
+
 print("✅ Data loaded for summary report!")
 
-# Clean data
-df = df.dropna(subset=["Confirmed", "Deaths", "Recovered"])
+# ✅ Aggregate per country (max cumulative values)
+latest_global = (
+    df.groupby("location")[["total_cases", "total_deaths", "total_vaccinations", "population"]]
+    .max()
+    .reset_index()
+)
 
-# Global statistics
+# ✅ Compute global totals
 summary = {
-    "Total Confirmed": df["Confirmed"].sum(),
-    "Total Deaths": df["Deaths"].sum(),
-    "Total Recovered": df["Recovered"].sum(),
-    "Mortality Rate (%)": (df["Deaths"].sum() / df["Confirmed"].sum()) * 100,
-    "Recovery Rate (%)": (df["Recovered"].sum() / df["Confirmed"].sum()) * 100,
+    "Total Cases": int(latest_global["total_cases"].sum()),
+    "Total Deaths": int(latest_global["total_deaths"].sum()),
+    "Total Vaccination Doses": int(latest_global["total_vaccinations"].sum()),
+    "Mortality Rate (%)": round((latest_global["total_deaths"].sum() / latest_global["total_cases"].sum()) * 100, 2),
+    "Vaccination Rate (%)": round((latest_global["total_vaccinations"].sum() / latest_global["population"].sum()) * 100, 2)
 }
 
-summary_df = pd.DataFrame([summary])
-summary_df.to_csv("data/summary_report.csv", index=False)
-print("\n📊 Summary report saved as data/summary_report.csv")
+# ✅ Save global summary
+pd.DataFrame([summary]).to_csv("data/summary_report.csv", index=False)
+print("📊 Summary report saved as data/summary_report.csv")
 
-# Country-level summary
-country_summary = df.groupby("Country/Region")[["Confirmed", "Deaths", "Recovered"]].sum().reset_index()
+# ✅ Save country-level summary
+country_summary = latest_global.copy()
+country_summary["Mortality Rate (%)"] = round((country_summary["total_deaths"] / country_summary["total_cases"]) * 100, 2)
+country_summary["Vaccination Rate (%)"] = round((country_summary["total_vaccinations"] / country_summary["population"]) * 100, 2)
 country_summary.to_csv("data/country_summary.csv", index=False)
 print("🌍 Country-level summary saved as data/country_summary.csv")
 
-
-# Ranking by recovery and mortality rate
-country_summary["Recovery Rate (%)"] = (country_summary["Recovered"] / country_summary["Confirmed"]) * 100
-country_summary["Mortality Rate (%)"] = (country_summary["Deaths"] / country_summary["Confirmed"]) * 100
-
-# Top 10 countries by recovery rate
-top_recovery = country_summary.sort_values(by="Recovery Rate (%)", ascending=False).head(10)
-top_recovery.to_csv("data/top10_recovery.csv", index=False)
-
-# Top 10 countries by mortality rate
-top_mortality = country_summary.sort_values(by="Mortality Rate (%)", ascending=False).head(10)
-top_mortality.to_csv("data/top10_mortality.csv", index=False)
-
-print("🏆 Top 10 recovery and mortality rate tables saved in data/")
+print("✅ Summary report generation complete!")
