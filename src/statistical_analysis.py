@@ -74,6 +74,36 @@ if p_value < 0.05:
     print("👉 Significant difference found between deaths and vaccinations.")
 else:
     print("👉 No significant difference found between deaths and vaccinations.")
+    
+# ----------------------------------------------------------
+# 🧪 SECOND T-TEST: Mortality Rate Before vs After Vaccinations
+# ----------------------------------------------------------
+
+# Define vaccination start date globally
+vaccination_start = pd.to_datetime("2021-01-01")
+
+# Split data into pre-vaccine and post-vaccine phases
+pre_vaccine = df[df["date"] < vaccination_start]
+post_vaccine = df[df["date"] >= vaccination_start]
+
+# Compute mortality rates for both periods
+pre_mortality = (pre_vaccine.groupby("location")["total_deaths"].max() /
+                 pre_vaccine.groupby("location")["total_cases"].max()).replace([np.inf, -np.inf], 0).fillna(0)
+
+post_mortality = (post_vaccine.groupby("location")["total_deaths"].max() /
+                  post_vaccine.groupby("location")["total_cases"].max()).replace([np.inf, -np.inf], 0).fillna(0)
+
+# Perform t-test
+t_stat2, p_value2 = stats.ttest_ind(pre_mortality, post_mortality, equal_var=False)
+
+print("\n🧪 Second T-Test: Mortality Before vs After Vaccination Start")
+print(f"t = {t_stat2:.4f}, p = {p_value2:.4f}")
+
+if p_value2 < 0.05:
+    print("👉 Significant reduction in mortality after vaccination rollout.")
+else:
+    print("👉 No statistically significant reduction in mortality detected.")
+
 
 # ===============================
 # 🔹 Save statistical summary
