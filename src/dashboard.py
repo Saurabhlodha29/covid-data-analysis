@@ -1,7 +1,12 @@
+import os
 import streamlit as st
 import pandas as pd
 from PIL import Image
 import plotly.graph_objects as go
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DATA_PATH = os.path.join(BASE_DIR, "data", "cleaned_covid_data.csv")
+
 
 # 🎨 PAGE CONFIGURATION
 st.set_page_config(
@@ -45,7 +50,7 @@ st.markdown("<div class='sub-header'>Comprehensive Global COVID-19 Insights (202
 
 # 📂 LOAD DATA
 try:
-    df = pd.read_csv("cleaned_covid_data.csv")
+    df = pd.read_csv(DATA_PATH)
     df["date"] = pd.to_datetime(df["date"], errors="coerce")
     df = df[(df["date"] >= "2020-01-01") & (df["date"] <= "2022-01-31")]
     df.rename(columns={"total_vaccinations": "total_vaccination_doses"}, inplace=True)

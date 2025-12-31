@@ -1,7 +1,7 @@
 import pandas as pd
 
 # Load the OWID dataset
-df = pd.read_csv("data/owid_covid_data.csv")
+df = pd.read_csv("data/cleaned_covid_data.csv")
 
 print("✅ OWID dataset loaded successfully!")
 print("Shape:", df.shape)

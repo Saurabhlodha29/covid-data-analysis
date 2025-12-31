@@ -5,7 +5,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 #  Load dataset
-df = pd.read_csv("cleaned_covid_data.csv")
+df = pd.read_csv("data/cleaned_covid_data.csv")
 df["date"] = pd.to_datetime(df["date"], errors="coerce")
 
 # Use only 2020–2022 data

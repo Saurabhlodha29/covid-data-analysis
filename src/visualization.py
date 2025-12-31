@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # ✅ Load cleaned dataset
-df = pd.read_csv("cleaned_covid_data.csv")
+df = pd.read_csv("data/cleaned_covid_data.csv")
 df["date"] = pd.to_datetime(df["date"], errors="coerce")
 
 # ✅ Filter up to Jan 2022
