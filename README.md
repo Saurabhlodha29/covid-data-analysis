@@ -13,7 +13,7 @@ The goal is to extract meaningful trends and relationships between confirmed cas
 ---
 
 ## Project Structure
-DS_PROJECT/
+COVID_ANALYSIS/
 ├── data/
 │ └── cleaned_covid_data.csv
 ├── src/
